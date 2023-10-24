@@ -93,7 +93,7 @@ export default {
 }
 
 .index-list-item-img {
-  flex: 0 0 auto; /* 保持元素不被压缩 */
+  flex-shrink: 0; /* 保持元素不被压缩 */
   width: 106px;
   height: 106px;
   position: relative;
@@ -118,13 +118,12 @@ export default {
 
 /* 右侧歌曲名字 */
 .index-list-item-text {
-  flex: 1;
   font-size: 12px;
   line-height: 35px;
 }
 
 .index-list-item-text-item {
-  width: 90%;
+  width: 55vw;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

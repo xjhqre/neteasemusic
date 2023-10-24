@@ -15,3 +15,14 @@ export function topListDetail() {
     })
 
 }
+
+/**
+ * 获取歌单详情
+ * @param id
+ */
+export function playlistDetail(id) {
+    return uni.request({
+        url: `${baseUrl}/playlist/detail?id=${id}`,
+        method: 'GET'
+    })
+}

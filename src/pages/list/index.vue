@@ -1,24 +1,24 @@
 <template>
   <view class="container list">
-    <view class="fixbg"></view>
+    <view class="fixbg" :style="{ backgroundImage: 'url(' + playlist.coverImgUrl + ')' }"></view>
     <music-head :title="title" :icon="true" style="color: white"></music-head>
     <view class="container">
       <scroll-view scroll-y>
         <view class="list-head">
           <!-- 图片部分 -->
           <view class="list-head-img">
-            <image src="/static/wangyiyunyinyue.png"></image>
+            <image :src="playlist.coverImgUrl"></image>
             <text class="iconfont iconyousanjiao">30亿</text>
           </view>
           <!-- 文字描述 -->
           <view class="list-head-text">
-            <view>测试文字</view>
+            <view>{{ playlist.name }}</view>
             <view>
-              <image src="/static/wangyiyunyinyue.png"></image>
-              测试文字
+              <image :src="playlist.creator.avatarUrl"></image>
+              {{ playlist.creator.nickname }}
             </view>
             <view>
-              测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字
+              {{ playlist.description }}
             </view>
           </view>
         </view>
@@ -34,19 +34,22 @@
           <view class="list-music-head">
             <text class="iconfont iconbofang1"></text>
             <text>播放全部</text>
-            <text>(共100首)</text>
+            <text>(共{{ playlist.trackCount }}首)</text>
           </view>
-          <view class="list-music-item">
-            <view class="list-music-item-top">1</view>
+          <view class="list-music-item" v-for="(item ,index) in playlist.tracks" :key="index">
+            <view class="list-music-item-top">{{ index + 1 }}</view>
             <view class="list-music-item-song">
-              <view>与我无关</view>
+              <view>{{ item.name }}</view>
               <view>
-                <image src="/static/dujia.png"></image>
-                <image src="/static/sq.png"></image>
-                阿容 - 与我无关
+                <image v-if="privileges[index].fee === 1"
+                       src="/static/vip.png"></image>
+                <image v-if="privileges[index].flag & 64 !== 0"
+                       src="/static/dujia.png"></image>
+                <image v-if="privileges[index].maxbr === 999000" src="/static/sq.png"></image>
+                <view>{{ spliceAuthorName(item.ar) }} - {{ item.al.name }}</view>
               </view>
             </view>
-            <text class="iconfont iconbofang"></text>
+            <text class="iconfont iconbofang" style="flex-shrink: 0"></text>
           </view>
         </view>
       </scroll-view>
@@ -57,6 +60,7 @@
 <script>
 import musicHead from "@/components/MusicHead/index.vue";
 import '@/styles/iconfont.css'
+import {playlistDetail} from "@/api/api";
 
 export default {
   components: {
@@ -67,12 +71,47 @@ export default {
       // 歌单ID
       id: null,
       // 歌单名称
-      title: ""
+      title: "",
+      // 歌曲列表
+      playlist: {
+        playCount: 0, // 歌单播放量
+        description: '', // 歌单描述
+        coverImgUrl: '', // 歌单封面
+        trackCount: 0, // 歌单歌曲数量
+        name: '', // 歌单名称
+        creator: {
+          avatarUrl: '', // 歌单创建者头像
+          nickname: '' // 歌单创建者昵称
+        },
+        tracks: []
+      },
+      privileges: []
     }
   },
   onLoad(options) {
     this.id = options.id;
+    // console.log("id: {}", this.id)
     this.title = options.title;
+    playlistDetail(this.id).then(res => {
+      console.log(res)
+      if (res.data.code === 200) {
+        this.playlist = res.data.playlist
+        this.privileges = res.data.privileges
+      }
+    })
+  },
+  methods: {
+    spliceAuthorName(ar) {
+      let ret = ''
+      for (let i = 0; i < ar.length; i++) {
+        if (i !== ar.length - 1) {
+          ret += ar[i].name + '/'
+        } else {
+          ret += ar[i].name
+        }
+      }
+      return ret
+    }
   },
   props: []
 }
@@ -197,6 +236,7 @@ export default {
   font-size: 15px;
   line-height: 15px;
   color: #959595;
+  flex-shrink: 0; /* 在flex布局中防止被压缩 */
 }
 
 .list-music-item-song {
@@ -206,6 +246,10 @@ export default {
 .list-music-item-song view:nth-child(1) {
   font-size: 14px;
   color: black;
+  width: 70vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .list-music-item-song view:nth-child(2) {
@@ -213,6 +257,13 @@ export default {
   font-size: 10px;
   color: #959595;
   align-items: center;
+}
+
+.list-music-item-song view:nth-child(2) view {
+  width: 55vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .list-music-item-song view:nth-child(2) image {

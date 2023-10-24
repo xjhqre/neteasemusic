@@ -1,1 +1,1 @@
-export const baseUrl = "http://116.62.103.149:3000"
+export const baseUrl = "https://service-rur9ving-1304986681.gz.apigw.tencentcs.com"

@@ -17,7 +17,6 @@ export default {
 .container {
   width: 100%;
   /* vh表示视口（viewport）的高度。视口高度是指用户在浏览器中可见内容的区域高度 */
-  height: calc(100vh - 70px);
   /* 超出的元素隐藏 */
   overflow: hidden;
 }
@@ -32,7 +31,6 @@ export default {
   position: fixed;
   left: 0;
   top: 0;
-  background-image: url("static/wangyiyunyinyue.png");
   background-size: cover; /* 背景图片完全覆盖背景区域，并保持其宽高比例不变 */
   background-position: center 0; /* 横向位置设置为水平居中，纵向位置设置为顶部边缘 */
   filter: blur(10px); /* 模糊 */
