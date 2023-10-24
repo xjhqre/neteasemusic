@@ -1,5 +1,5 @@
 <template>
-  <view class="content">
+  <view class="index">
     <music-head title="网易云音乐" :icon="false"></music-head>
     <view class="container">
       <!-- 页面在y轴方向上进行滚动，保持头部固定不动 -->
@@ -11,24 +11,14 @@
         </view>
         <!-- 歌单列表部分 -->
         <view class="index-list">
-          <!--<view class="index-list-item">-->
-          <!--  <view class="index-list-item-img">-->
-          <!--    <image src="@//static/wangyiyunyinyue.png"></image>-->
-          <!--    <text>每天更新</text>-->
-          <!--  </view>-->
-          <!--  <view class="index-list-item-text">-->
-          <!--    <view>1. 与我无关 - 阿瑞</view>-->
-          <!--    <view>1. 与我无关 - 阿瑞</view>-->
-          <!--    <view>1. 与我无关 - 阿瑞</view>-->
-          <!--  </view>-->
-          <!--</view>-->
-          <view class="index-list-item" v-for="(item, index) in topListDetail" :key="index">
+          <view class="index-list-item" v-for="(item, index) in topListDetail" :key="index"
+                @tap="handleToList(item.id, item.name)">
             <view class="index-list-item-img">
               <image :src="item.coverImgUrl"></image>
               <text>{{ item.updateFrequency }}</text>
             </view>
             <view class="index-list-item-text">
-              <view v-for="(item, index) in item.tracks" :key="index">
+              <view class="index-list-item-text-item" v-for="(item, index) in item.tracks" :key="index">
                 {{ index + 1 }}.{{ item.first }} - {{ item.second }}
               </view>
             </view>
@@ -60,7 +50,13 @@ export default {
       }
     })
   },
-  methods: {}
+  methods: {
+    handleToList(id, title) {
+      uni.navigateTo({
+        url: `/pages/list/index?id=${id}&title=${title}`
+      })
+    }
+  }
 }
 </script>
 
@@ -97,6 +93,7 @@ export default {
 }
 
 .index-list-item-img {
+  flex: 0 0 auto; /* 保持元素不被压缩 */
   width: 106px;
   height: 106px;
   position: relative;
@@ -121,7 +118,15 @@ export default {
 
 /* 右侧歌曲名字 */
 .index-list-item-text {
+  flex: 1;
   font-size: 12px;
   line-height: 35px;
+}
+
+.index-list-item-text-item {
+  width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
