@@ -14,6 +14,13 @@
         // 自定义头部布局
         "navigationStyle": "custom"
       }
+    },
+    {
+      "path": "pages/detail/index",
+      "style": {
+        // 自定义头部布局
+        "navigationStyle": "custom"
+      }
     }
   ],
   "globalStyle": {

@@ -26,3 +26,14 @@ export function playlistDetail(id) {
         method: 'GET'
     })
 }
+
+/**
+ * 获取歌曲详情
+ * @param id
+ */
+export function songDetail(id) {
+    return uni.request({
+        url: `${baseUrl}/song/detail?ids=${id}`,
+        method: 'GET'
+    })
+}

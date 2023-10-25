@@ -1,5 +1,5 @@
 <template>
-  <view class="container list">
+  <view class="list">
     <view class="fixbg" :style="{ backgroundImage: 'url(' + playlist.coverImgUrl + ')' }"></view>
     <music-head :title="title" :icon="true" style="color: white"></music-head>
     <view class="container" v-show="!isLoading">
@@ -36,7 +36,8 @@
             <text>播放全部</text>
             <text>(共{{ playlist.trackCount }}首)</text>
           </view>
-          <view class="list-music-item" v-for="(item ,index) in playlist.tracks" :key="index">
+          <view class="list-music-item" v-for="(item ,index) in playlist.tracks" :key="index"
+                @tap="handleToDetail(item.id, item.name)">
             <view class="list-music-item-top">{{ index + 1 }}</view>
             <view class="list-music-item-song">
               <view>{{ item.name }}</view>
@@ -114,6 +115,12 @@ export default {
       }
       return ret
     },
+    // 跳转详情页
+    handleToDetail(songId, songName) {
+      uni.navigateTo({
+        url: `/pages/detail/index?songId=${songId}&songName=${songName}`
+      })
+    }
   },
   props: []
 }
