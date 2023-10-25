@@ -2,13 +2,13 @@
   <view class="container list">
     <view class="fixbg" :style="{ backgroundImage: 'url(' + playlist.coverImgUrl + ')' }"></view>
     <music-head :title="title" :icon="true" style="color: white"></music-head>
-    <view class="container">
+    <view class="container" v-show="!isLoading">
       <scroll-view scroll-y>
         <view class="list-head">
           <!-- 图片部分 -->
           <view class="list-head-img">
             <image :src="playlist.coverImgUrl"></image>
-            <text class="iconfont iconyousanjiao">30亿</text>
+            <text class="iconfont iconyousanjiao">{{ playlist.playCount | formatCount }}</text>
           </view>
           <!-- 文字描述 -->
           <view class="list-head-text">
@@ -85,7 +85,8 @@ export default {
         },
         tracks: []
       },
-      privileges: []
+      privileges: [],
+      isLoading: true
     }
   },
   onLoad(options) {
@@ -97,6 +98,7 @@ export default {
       if (res.data.code === 200) {
         this.playlist = res.data.playlist
         this.privileges = res.data.privileges
+        this.isLoading = false
       }
     })
   },
@@ -111,7 +113,7 @@ export default {
         }
       }
       return ret
-    }
+    },
   },
   props: []
 }
