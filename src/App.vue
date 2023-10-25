@@ -33,7 +33,7 @@ export default {
   top: 0;
   background-size: cover; /* 背景图片完全覆盖背景区域，并保持其宽高比例不变 */
   background-position: center 0; /* 横向位置设置为水平居中，纵向位置设置为顶部边缘 */
-  filter: blur(10px); /* 模糊 */
+  filter: blur(20px); /* 模糊 */
   transform: scale(1.2); /*  放大1.2倍 */
 }
 </style>
