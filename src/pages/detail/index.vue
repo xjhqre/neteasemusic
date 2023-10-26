@@ -38,6 +38,29 @@
             <text class="iconfont iconbofang"></text>
           </view>
         </view>
+        <view class="detail-comment">
+          <view class="detail-comment-head">精彩评论</view>
+          <view class="detail-comment-item">
+            <view class="detail-comment-item-img">
+
+            </view>
+            <view class="detail-comment-item-content">
+              <view class="detail-comment-item-content-title">
+                <view class="detail-comment-item-content-title-name">
+                  <view>周杰伦</view>
+                  <view>20231654</view>
+                </view>
+                <view class="detail-comment-item-content-title-like">
+                  56027
+                  <text class="iconfont iconlike"></text>
+                </view>
+              </view>
+              <view class="detail-comment-item-content-text">
+                测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试
+              </view>
+            </view>
+          </view>
+        </view>
       </scroll-view>
     </view>
   </view>
@@ -197,4 +220,70 @@ export default {
   height: 10px;
   margin-right: 5px;
 }
+
+.detail-comment {
+  margin: 0 15px;
+}
+
+.detail-comment-head {
+  font-size: 18px;
+  color: white;
+  margin: 25px 0;
+}
+
+.detail-comment-item {
+  margin-bottom: 14px;
+  display: flex;
+}
+
+.detail-comment-item-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 9px;
+}
+
+.detail-comment-item-img image {
+  width: 100%;
+  height: 100%;
+}
+
+.detail-comment-item-content {
+  flex: 1;
+  color: #c7c7c9;
+}
+
+.detail-comment-item-content-title {
+  display: flex;
+  justify-content: space-between; /* 靠两边均匀分布 */
+}
+
+.detail-comment-item-content-title-name {
+
+}
+
+.detail-comment-item-content-title-name view:nth-child(1) {
+  font-size: 13px;
+
+}
+
+.detail-comment-item-content-title-name view:nth-child(2) {
+  font-size: 10px;
+  color: #8b8a8b;
+}
+
+.detail-comment-item-content-title-like {
+  font-size: 14px;
+}
+
+.detail-comment-item-content-text {
+  line-height: 20px;
+  font-size: 14px;
+  color: white;
+  margin-top: 10px;
+  border-bottom: 1px #e0e0e0 solid;
+  padding-bottom: 20px;
+}
+
 </style>
