@@ -56,7 +56,7 @@
                 </view>
               </view>
               <view class="detail-comment-item-content-text">
-                {{ item.content }}
+                <text>{{ item.content }}</text>
               </view>
             </view>
           </view>
@@ -288,7 +288,7 @@ export default {
 }
 
 .detail-comment-item-content-text {
-  line-height: 20px;
+  line-height: 25px;
   font-size: 14px;
   color: white;
   margin-top: 10px;
