@@ -25,7 +25,7 @@
           </view>
           <view class="detail-like-item">
             <view class="detail-like-item-img">
-              <image></image>
+              <image :src="song.al.picUrl"></image>
             </view>
             <view class="detail-like-item-song">
               <view>蓝</view>
@@ -81,16 +81,26 @@ export default {
           picUrl: ''
         }
       },
+      // 相似歌曲列表
+      simi: [],
       isLoading: true
     }
   },
   onLoad(options) {
-    songDetail(options.songId).then(res => {
-      // console.log(options.songId)
-      this.song = res.data.songs[0]
-      this.isLoading = false
-    })
+    this.getMusic(options.songId)
   },
+  methods: {
+    getMusic(songId) {
+      Promise.all([
+        songDetail(songId).then(res => {
+          console.log(songId)
+          this.song = res.data.songs[0]
+        }),
+
+      ])
+
+    }
+  }
 }
 </script>
 

@@ -37,3 +37,47 @@ export function songDetail(id) {
         method: 'GET'
     })
 }
+
+/**
+ * 获取相似歌曲
+ * @param id
+ */
+export function simiSong(id) {
+    return uni.request({
+        url: `${baseUrl}/simi/song?id=${id}`,
+        method: 'GET'
+    })
+}
+
+/**
+ * 获取歌曲评论
+ * @param id
+ */
+export function commentMusic(id) {
+    return uni.request({
+        url: `${baseUrl}/comment/music?id=${id}`,
+        method: 'GET'
+    })
+}
+
+/**
+ * 获取歌曲歌词
+ * @param id
+ */
+export function lyric(id) {
+    return uni.request({
+        url: `${baseUrl}/lyric?id=${id}`,
+        method: 'GET'
+    })
+}
+
+/**
+ * 获取音乐 url
+ * @param id
+ */
+export function songUrl(id) {
+    return uni.request({
+        url: `${baseUrl}/song/url?id=${id}`,
+        method: 'GET'
+    })
+}
