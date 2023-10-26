@@ -13,9 +13,9 @@
         <!-- 歌词 -->
         <view class="detail-lyric">
           <view class="detail-lyric-wrap">
-            <view class="detail-lyric-item">测试测试测试测试测试测试</view>
-            <view class="detail-lyric-item active">测试测试测试测试测试测试</view>
-            <view class="detail-lyric-item">测试测试测试测试测试测试</view>
+            <view class="detail-lyric-item" :class="{ active: lyricIndex === index}" v-for="(item, index) in lyric"
+                  :key="index">{{ item.lyric }}
+            </view>
           </view>
         </view>
         <!-- 其他喜欢 -->
@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import {commentMusic, simiSong, songDetail} from "@/api/api";
+import {commentMusic, lyric, simiSong, songDetail} from "@/api/api";
 import musicHead from "@/components/MusicHead/index.vue";
 import '@/styles/iconfont.css'
 
@@ -85,7 +85,10 @@ export default {
       simi: [],
       // 评论
       comments: [],
-      isLoading: true
+      // 歌词
+      lyric: [],
+      isLoading: true,
+      lyricIndex: 0
     }
   },
   onLoad(options) {
@@ -93,10 +96,36 @@ export default {
   },
   methods: {
     getMusic(songId) {
-      Promise.all([songDetail(songId), simiSong(songId), commentMusic(songId)]).then(res => {
+      Promise.all([songDetail(songId), simiSong(songId), commentMusic(songId), lyric(songId)]).then(res => {
         this.song = res[0].data.songs[0]
         this.simi = res[1].data.songs
         this.comments = res[2].data.hotComments
+
+        // 歌词
+        let lyricsArray = res[3].data.lrc.lyric.split('\n');
+        let lyricsObjects = [];
+
+        for (let i = 0; i < lyricsArray.length; i++) {
+          let line = lyricsArray[i];
+          let timeStartIndex = line.indexOf('[') + 1;
+          let timeEndIndex = line.indexOf(']');
+          let timeString = line.substring(timeStartIndex, timeEndIndex);
+          let timeParts = timeString.split(':');
+          let minutes = parseInt(timeParts[0]);
+          let seconds = parseFloat(timeParts[1]);
+          let timeInSeconds = minutes * 60 + seconds;
+
+          let lyric = line.substring(timeEndIndex + 1).trim();
+
+          if (timeString !== '' && !isNaN(timeInSeconds) && lyric !== '') {
+            let lyricObject = {
+              time: timeInSeconds,
+              lyric: lyric
+            };
+            lyricsObjects.push(lyricObject);
+          }
+        }
+        this.lyric = lyricsObjects
         this.isLoading = false
       });
     }
