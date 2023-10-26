@@ -47,7 +47,7 @@
                 <image v-if="privileges[index].flag & 64 !== 0"
                        src="/static/dujia.png"></image>
                 <image v-if="privileges[index].maxbr === 999000" src="/static/sq.png"></image>
-                <view>{{ spliceAuthorName(item.ar) }} - {{ item.al.name }}</view>
+                <view>{{ item.ar | spliceAuthorName }} - {{ item.al.name }}</view>
               </view>
             </view>
             <text class="iconfont iconbofang" style="flex-shrink: 0"></text>
@@ -259,6 +259,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 4px;
 }
 
 .list-music-item-song view:nth-child(2) {

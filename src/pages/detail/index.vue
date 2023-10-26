@@ -23,40 +23,40 @@
           <view class="detail-like-head">
             喜欢这首歌的人也听
           </view>
-          <view class="detail-like-item">
+          <view class="detail-like-item" v-for="(item, index) in simi" :key="index">
             <view class="detail-like-item-img">
-              <image :src="song.al.picUrl"></image>
+              <image :src="item.album.blurPicUrl"></image>
             </view>
             <view class="detail-like-item-song">
-              <view>蓝</view>
+              <view>{{ item.name }}</view>
               <view>
-                <image src="/static/dujia.png"></image>
-                <image src="/static/sq.png"></image>
-                失败起 - 蓝
+                <image v-if="item.privilege.maxbr === 999000" src="/static/sq.png"></image>
+                {{ item.artists | spliceAuthorName }} - {{ item.album.name }}
               </view>
             </view>
             <text class="iconfont iconbofang"></text>
           </view>
         </view>
+        <!-- 评论 -->
         <view class="detail-comment">
           <view class="detail-comment-head">精彩评论</view>
-          <view class="detail-comment-item">
+          <view class="detail-comment-item" v-for="(item, index) in comments" :key="index">
             <view class="detail-comment-item-img">
-
+              <image :src="item.user.avatarUrl"></image>
             </view>
             <view class="detail-comment-item-content">
               <view class="detail-comment-item-content-title">
                 <view class="detail-comment-item-content-title-name">
-                  <view>周杰伦</view>
-                  <view>20231654</view>
+                  <view>{{ item.user.nickname }}</view>
+                  <view>{{ item.time | timestampFormatting }}</view>
                 </view>
                 <view class="detail-comment-item-content-title-like">
-                  56027
+                  {{ item.likedCount | formatCount }}
                   <text class="iconfont iconlike"></text>
                 </view>
               </view>
               <view class="detail-comment-item-content-text">
-                测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试
+                {{ item.content }}
               </view>
             </view>
           </view>
@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import {songDetail} from "@/api/api";
+import {commentMusic, simiSong, songDetail} from "@/api/api";
 import musicHead from "@/components/MusicHead/index.vue";
 import '@/styles/iconfont.css'
 
@@ -83,6 +83,8 @@ export default {
       },
       // 相似歌曲列表
       simi: [],
+      // 评论
+      comments: [],
       isLoading: true
     }
   },
@@ -91,14 +93,12 @@ export default {
   },
   methods: {
     getMusic(songId) {
-      Promise.all([
-        songDetail(songId).then(res => {
-          console.log(songId)
-          this.song = res.data.songs[0]
-        }),
-
-      ])
-
+      Promise.all([songDetail(songId), simiSong(songId), commentMusic(songId)]).then(res => {
+        this.song = res[0].data.songs[0]
+        this.simi = res[1].data.songs
+        this.comments = res[2].data.hotComments
+        this.isLoading = false
+      });
     }
   }
 }
