@@ -99,6 +99,7 @@ export default {
       if (res.data.code === 200) {
         this.playlist = res.data.playlist
         this.privileges = res.data.privileges
+        this.$store.commit('INIT_TOP_LIST_IDS', res.data.playlist.trackIds)
         this.isLoading = false
       }
     })

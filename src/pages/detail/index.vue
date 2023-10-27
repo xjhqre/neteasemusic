@@ -23,7 +23,7 @@
           <view class="detail-like-head">
             喜欢这首歌的人也听
           </view>
-          <view class="detail-like-item" v-for="(item, index) in simi" :key="index">
+          <view class="detail-like-item" v-for="(item, index) in simi" :key="index" @tap="handleToSimi(item.id)">
             <view class="detail-like-item-img">
               <image :src="item.album.blurPicUrl"></image>
             </view>
@@ -107,6 +107,9 @@ export default {
    */
   onUnload() {
     this.cancelLyricIndex()
+    // #ifdef H5
+    this.audioManager.destroy();
+    // #endif
   },
   /**
    * 当前页面被导航到其他页面（非非页面组件）时，例如调用 uni.navigateTo、uni.redirectTo 等导航 API 跳转到其他页面。
@@ -114,35 +117,52 @@ export default {
    */
   onHide() {
     this.cancelLyricIndex()
+    // #ifdef H5
+    this.audioManager.destroy();
+    // #endif
   },
   methods: {
     getMusic(songId) {
+      this.isLoading = true
+
+      this.$store.commit('NEXT_ID', songId)
+
       Promise.all([songDetail(songId), simiSong(songId), commentMusic(songId), lyric(songId), songUrl(songId)]).then(res => {
         this.song = res[0].data.songs[0]
         this.simi = res[1].data.songs
         this.comments = res[2].data.hotComments
         this.lyric = this.formatLyrics(res[3].data.lrc.lyric)
         this.songUrl = res[4].data.data[0].url
-        if (uni.getSystemInfoSync().platform === 'mp-weixin') {
-          this.audioManager = uni.getBackgroundAudioManager();
-          this.audioManager.title = this.song.name
-          this.audioManager.src = this.songUrl
-        } else {
+
+        // #ifdef MP-WEIXIN
+        this.audioManager = uni.getBackgroundAudioManager();
+        this.audioManager.title = this.song.name
+        // #endif
+
+        // #ifdef H5
+        if (!this.audioManager) {
           this.audioManager = uni.createInnerAudioContext();
-          this.audioManager.autoplay = true;
-          this.audioManager.src = this.songUrl || '';
-          this.listenLyricIndex();
-          this.audioManager.onPlay(() => {
-            this.iconPlay = 'iconpause'
-            this.isPlayRotate = true
-            this.listenLyricIndex();
-          })
-          this.audioManager.onPause(() => {
-            this.iconPlay = 'iconbofang1'
-            this.isPlayRotate = false
-            this.cancelLyricIndex()
-          })
         }
+        this.audioManager = uni.createInnerAudioContext();
+        this.audioManager.autoplay = true;
+        // #endif
+
+        this.audioManager.src = this.songUrl || '';
+        this.listenLyricIndex();
+        this.audioManager.onPlay(() => {
+          this.iconPlay = 'iconpause'
+          this.isPlayRotate = true
+          this.listenLyricIndex();
+        })
+        this.audioManager.onPause(() => {
+          this.iconPlay = 'iconbofang1'
+          this.isPlayRotate = false
+          this.cancelLyricIndex()
+        })
+        this.audioManager.onEnded(() => {
+          this.getMusic(this.$store.state.nextId);
+        })
+
 
         this.isLoading = false
       });
@@ -199,6 +219,13 @@ export default {
     },
     cancelLyricIndex() {
       clearInterval(this.timer)
+    },
+    // 切换相似歌曲
+    handleToSimi(id) {
+      if (this.audioManager) {
+        this.audioManager.destroy();
+      }
+      this.getMusic(id)
     }
   }
 }

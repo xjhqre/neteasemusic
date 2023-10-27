@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App'
 import './uni.promisify.adaptor'
+import store from "@/store";
 
 Vue.config.productionTip = false
 
@@ -40,6 +41,7 @@ Vue.filter('timestampFormatting', function (timeStamp) {
 })
 
 const app = new Vue({
-    ...App
+    ...App,
+    store
 })
 app.$mount()
