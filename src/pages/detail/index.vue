@@ -6,8 +6,8 @@
       <scroll-view scroll-y>
         <!-- 唱片图像 -->
         <view class="detail-play">
-          <image :src="song.al.picUrl"></image>
-          <text class="iconfont iconpause"></text>
+          <image :class="{'detail-play-run': isPlayRotate}" :src="song.al.picUrl"></image>
+          <text class="iconfont" :class="iconPlay" @tap="handleToPlay"></text>
           <view></view>
         </view>
         <!-- 歌词 -->
@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import {commentMusic, lyric, simiSong, songDetail} from "@/api/api";
+import {commentMusic, lyric, simiSong, songDetail, songUrl} from "@/api/api";
 import musicHead from "@/components/MusicHead/index.vue";
 import '@/styles/iconfont.css'
 
@@ -88,7 +88,13 @@ export default {
       // 歌词
       lyric: [],
       isLoading: true,
-      lyricIndex: 0
+      lyricIndex: 0,
+      songUrl: '',
+      audioManager: {},
+      // 播放按钮状态
+      iconPlay: 'iconpause',
+      // 是否旋转
+      isPlayRotate: true
     }
   },
   onLoad(options) {
@@ -96,38 +102,74 @@ export default {
   },
   methods: {
     getMusic(songId) {
-      Promise.all([songDetail(songId), simiSong(songId), commentMusic(songId), lyric(songId)]).then(res => {
+      Promise.all([songDetail(songId), simiSong(songId), commentMusic(songId), lyric(songId), songUrl(songId)]).then(res => {
         this.song = res[0].data.songs[0]
         this.simi = res[1].data.songs
         this.comments = res[2].data.hotComments
-
-        // 歌词
-        let lyricsArray = res[3].data.lrc.lyric.split('\n');
-        let lyricsObjects = [];
-
-        for (let i = 0; i < lyricsArray.length; i++) {
-          let line = lyricsArray[i];
-          let timeStartIndex = line.indexOf('[') + 1;
-          let timeEndIndex = line.indexOf(']');
-          let timeString = line.substring(timeStartIndex, timeEndIndex);
-          let timeParts = timeString.split(':');
-          let minutes = parseInt(timeParts[0]);
-          let seconds = parseFloat(timeParts[1]);
-          let timeInSeconds = minutes * 60 + seconds;
-
-          let lyric = line.substring(timeEndIndex + 1).trim();
-
-          if (timeString !== '' && !isNaN(timeInSeconds) && lyric !== '') {
-            let lyricObject = {
-              time: timeInSeconds,
-              lyric: lyric
-            };
-            lyricsObjects.push(lyricObject);
-          }
+        this.lyric = this.formatLyrics(res[3].data.lrc.lyric)
+        this.songUrl = res[4].data.data[0].url
+        console.log(uni.getSystemInfoSync().platform)
+        if (uni.getSystemInfoSync().platform === 'mp-weixin') {
+          this.audioManager = uni.getBackgroundAudioManager();
+          this.audioManager.title = this.song.name
+          this.audioManager.src = this.songUrl
+        } else {
+          this.audioManager = uni.createInnerAudioContext();
+          this.audioManager.autoplay = true;
+          this.audioManager.src = this.songUrl || '';
+          this.audioManager.onPlay(() => {
+            this.iconPlay = 'iconpause'
+            this.isPlayRotate = true
+          })
+          this.audioManager.onPause(() => {
+            this.iconPlay = 'iconbofang1'
+            this.isPlayRotate = false
+          })
         }
-        this.lyric = lyricsObjects
+
         this.isLoading = false
       });
+    },
+    formatLyrics(text) {
+      // 歌词
+      let lyricsArray = text.split('\n');
+      let lyricsObjects = [];
+      for (let i = 0; i < lyricsArray.length; i++) {
+        let line = lyricsArray[i];
+        let timeStartIndex = line.indexOf('[') + 1;
+        let timeEndIndex = line.indexOf(']');
+        let timeString = line.substring(timeStartIndex, timeEndIndex);
+        let timeParts = timeString.split(':');
+        let minutes = parseInt(timeParts[0]);
+        let seconds = parseFloat(timeParts[1]);
+        let timeInSeconds = minutes * 60 + seconds;
+
+        let lyric = line.substring(timeEndIndex + 1).trim();
+
+        if (timeString !== '' && !isNaN(timeInSeconds) && lyric !== '') {
+          let lyricObject = {
+            time: timeInSeconds,
+            lyric: lyric
+          };
+          lyricsObjects.push(lyricObject);
+        }
+      }
+      return lyricsObjects
+    },
+    // 播放暂停音乐
+    handleToPlay() {
+      // 播放音乐
+      if (this.audioManager.paused) {
+        this.audioManager.play();
+      } else {
+        this.audioManager.pause();
+      }
+    },
+    listenLyricIndex() {
+      clearInterval(this.timer)
+      this.timer = setInterval(() => {
+        
+      }, 500)
     }
   }
 }
@@ -153,6 +195,28 @@ export default {
   bottom: 0;
   right: 0;
   margin: auto;
+  /*
+  10s 表示动画的持续时间为10秒。
+  linear 表示动画的过渡效果为线性过渡，即匀速运动。
+  move 是动画的名称，你可以在其他地方定义该动画的具体规则。
+  infinite 表示动画将无限循环播放。
+  */
+  animation: 10s linear move infinite;
+  /* 初始为暂停状态 */
+  animation-play-state: paused;
+}
+
+.detail-play .detail-play-run {
+  animation-play-state: running;
+}
+
+@keyframes move {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .detail-play text {

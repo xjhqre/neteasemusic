@@ -70,7 +70,10 @@
       // 上传代码时是否自动压缩
       "minified": true
     },
-    "usingComponents": true
+    "usingComponents": true,
+    "requiredBackgroundModes": [
+      "audio"
+    ]
   },
   "mp-alipay": {
     "usingComponents": true
