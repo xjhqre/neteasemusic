@@ -1,6 +1,6 @@
 <template>
   <view class="music-head">
-    <view v-if="icon" class="music-head-icon">
+    <view v-if="icon" class="music-head-icon" :class="{'music-head-iconblack' : iconblack}">
       <text class="iconfont iconzuojiantou-copy" @tap="handleToBack"></text>
       |
       <text class="iconfont iconshouye" @tap="handleToHome"></text>
@@ -14,7 +14,7 @@ export default {
   data() {
     return {}
   },
-  props: ['title', 'icon'],
+  props: ['title', 'icon', 'iconblack'],
   methods: {
     handleToBack() {
       uni.navigateBack();
@@ -54,5 +54,11 @@ export default {
   border-radius: 15px;
   display: flex;
   justify-content: space-evenly; /* 将子元素沿主轴均匀分布，同时在第一个元素之前和最后一个元素之后留有相等的空白间距。 */
+}
+
+.music-head-iconblack {
+  color: black;
+  border: 1px #eaeaea solid;
+  background: white;
 }
 </style>

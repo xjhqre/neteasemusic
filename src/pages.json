@@ -21,6 +21,13 @@
         // 自定义头部布局
         "navigationStyle": "custom"
       }
+    },
+    {
+      "path": "pages/search/index",
+      "style": {
+        // 自定义头部布局
+        "navigationStyle": "custom"
+      }
     }
   ],
   "globalStyle": {

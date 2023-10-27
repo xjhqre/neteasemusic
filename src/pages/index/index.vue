@@ -5,7 +5,7 @@
       <!-- 页面在y轴方向上进行滚动，保持头部固定不动 -->
       <scroll-view scroll-y>
         <!-- 搜索框部分 -->
-        <view class="index-search">
+        <view class="index-search" @tap="handleToSearch">
           <text class="iconfont iconsearch"></text>
           <input type="text" placeholder="搜索歌曲"/>
         </view>
@@ -54,6 +54,11 @@ export default {
     handleToList(id, title) {
       uni.navigateTo({
         url: `/pages/list/index?id=${id}&title=${title}`
+      })
+    },
+    handleToSearch() {
+      uni.navigateTo({
+        url: `/pages/search/index`
       })
     }
   }
