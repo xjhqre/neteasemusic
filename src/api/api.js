@@ -81,3 +81,33 @@ export function songUrl(id) {
         method: 'GET'
     })
 }
+
+/**
+ * 搜索
+ */
+export function search(keywords) {
+    return uni.request({
+        url: `${baseUrl}/search?keywords=${keywords}`,
+        method: 'GET'
+    })
+}
+
+/**
+ * 热搜列表
+ */
+export function searchHotDetail() {
+    return uni.request({
+        url: `${baseUrl}/search/hot/detail`,
+        method: 'GET'
+    })
+}
+
+/**
+ * 搜索建议
+ */
+export function searchSuggest(keywords) {
+    return uni.request({
+        url: `${baseUrl}/search/suggest?keywords=${keywords}&type=mobile`,
+        method: 'GET'
+    })
+}
