@@ -12,7 +12,7 @@
         </view>
         <!-- 歌词 -->
         <view class="detail-lyric">
-          <view class="detail-lyric-wrap">
+          <view class="detail-lyric-wrap" :style="{transform: 'translateY(' + -(lyricIndex - 1) * 41 + 'px'}">
             <view class="detail-lyric-item" :class="{ active: lyricIndex === index}" v-for="(item, index) in lyric"
                   :key="index">{{ item.lyric }}
             </view>
@@ -100,6 +100,21 @@ export default {
   onLoad(options) {
     this.getMusic(options.songId)
   },
+  /**
+   * 调用 uni.navigateBack 或 uni.reLaunch 等导航 API 返回到上一个页面或重新加载页面。
+   * 页面被关闭或销毁，例如在多Tab应用中关闭某个页面。
+   * 页面被跳转到其他非页面的组件，例如跳转到 uni-popup、uni-modal 等非页面组件
+   */
+  onUnload() {
+    this.cancelLyricIndex()
+  },
+  /**
+   * 当前页面被导航到其他页面（非非页面组件）时，例如调用 uni.navigateTo、uni.redirectTo 等导航 API 跳转到其他页面。
+   * 当前页面被打开的非页面组件（例如 uni-popup、uni-modal）覆盖时
+   */
+  onHide() {
+    this.cancelLyricIndex()
+  },
   methods: {
     getMusic(songId) {
       Promise.all([songDetail(songId), simiSong(songId), commentMusic(songId), lyric(songId), songUrl(songId)]).then(res => {
@@ -108,7 +123,6 @@ export default {
         this.comments = res[2].data.hotComments
         this.lyric = this.formatLyrics(res[3].data.lrc.lyric)
         this.songUrl = res[4].data.data[0].url
-        console.log(uni.getSystemInfoSync().platform)
         if (uni.getSystemInfoSync().platform === 'mp-weixin') {
           this.audioManager = uni.getBackgroundAudioManager();
           this.audioManager.title = this.song.name
@@ -117,13 +131,16 @@ export default {
           this.audioManager = uni.createInnerAudioContext();
           this.audioManager.autoplay = true;
           this.audioManager.src = this.songUrl || '';
+          this.listenLyricIndex();
           this.audioManager.onPlay(() => {
             this.iconPlay = 'iconpause'
             this.isPlayRotate = true
+            this.listenLyricIndex();
           })
           this.audioManager.onPause(() => {
             this.iconPlay = 'iconbofang1'
             this.isPlayRotate = false
+            this.cancelLyricIndex()
           })
         }
 
@@ -168,8 +185,20 @@ export default {
     listenLyricIndex() {
       clearInterval(this.timer)
       this.timer = setInterval(() => {
-        
-      }, 500)
+        for (let i = 0; i < this.lyric.length; i++) {
+          // 当 i 到最后时
+          if (this.audioManager.currentTime > this.lyric[this.lyric.length - 1].time) {
+            this.lyricIndex = this.lyric.length - 1;
+            break;
+          }
+          if (this.audioManager.currentTime > this.lyric[i].time && this.audioManager.currentTime < this.lyric[i + 1].time) {
+            this.lyricIndex = i;
+          }
+        }
+      }, 100)
+    },
+    cancelLyricIndex() {
+      clearInterval(this.timer)
     }
   }
 }
@@ -254,6 +283,7 @@ export default {
 }
 
 .detail-lyric-wrap {
+  transition: .5s; /* 过渡效果的持续时间为0.5秒 */
 }
 
 .detail-lyric-item {
