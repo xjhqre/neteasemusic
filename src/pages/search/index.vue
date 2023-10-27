@@ -22,8 +22,20 @@
             <view>测试</view>
             <view>测试</view>
             <view>测试</view>
-
-
+          </view>
+        </view>
+        <view class="search-hot">
+          <view class="search-hot-head">热搜榜</view>
+          <view class="search-hot-item">
+            <view class="search-hot-item-top">1</view>
+            <view class="search-hot-item-word">
+              <view>
+                少年
+                <image src=""></image>
+              </view>
+              <view>大大阿达是的</view>
+            </view>
+            <text class="search-hot-item-count">25135</text>
           </view>
         </view>
       </scroll-view>
@@ -49,7 +61,7 @@ export default {
   display: flex;
   align-items: center;
   height: 35px;
-  margin: 35px 15px 15px 15px;
+  margin: 10px 15px 25px 15px;
   background: #f7f7f7;
   border-radius: 25px;
 }
@@ -66,6 +78,7 @@ export default {
 .search-history {
   margin: 0 15px;
   font-size: 13px;
+  margin-bottom: 30px;
 }
 
 .search-history-head {
@@ -85,5 +98,50 @@ export default {
   margin-right: 10px;
   margin-bottom: 10px;
   background: #f7f7f7;
+}
+
+.search-hot {
+  margin: 0 15px;
+  font-size: 13px;
+}
+
+.search-hot-head {
+  margin-bottom: 18px;
+}
+
+.search-hot-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 29px;
+
+}
+
+.search-hot-item-top {
+  color: #fb2222;
+  width: 30px;
+  margin-left: 4px;
+}
+
+.search-hot-item-word {
+  flex: 1;
+}
+
+.search-hot-item-word view:nth-child(1) {
+  font-size: 15px;
+  color: black;
+}
+
+.search-hot-item-word view:nth-child(2) {
+  font-size: 12px;
+  color: #878787;
+}
+
+.search-hot-item-word image {
+  width: 24px;
+  height: 11px;
+}
+
+.search-hot-item-count {
+  color: #878787;
 }
 </style>
