@@ -6,7 +6,7 @@
         <view class="search-search">
           <text class="iconfont iconsearch"></text>
           <input type="text" placeholder="搜索歌曲" v-model="searchWord" @confirm="handleToSearch(searchWord)"/>
-          <text v-show="searchWord" class="iconfont iconguanbi"></text>
+          <text v-show="searchWord" class="iconfont iconguanbi" @tap="handleToClose"></text>
         </view>
         <block v-if="searchType === 1">
           <view class="search-history">
@@ -37,17 +37,18 @@
             </view>
           </view>
         </block>
-        <black v-else-if="searchType === 2">
+        <block v-else-if="searchType === 3">
           <view class="search-result">
-            <view class="search-result-item">
+            <view class="search-result-item" v-for="(item, index) in searchResult" :key="index"
+                  @tap="handleToDetail(item.id, item.name)">
               <view class="search-result-item-word">
-                <view>少年</view>
-                <view>阿斯顿萨达</view>
+                <view>{{ item.name }}</view>
+                <view>{{ item.artists | spliceAuthorName }} - {{ item.album.name }}</view>
               </view>
               <text class="iconfont iconbofang"></text>
             </view>
           </view>
-        </black>
+        </block>
       </scroll-view>
     </view>
   </view>
@@ -56,7 +57,7 @@
 <script>
 import musicHead from "@/components/MusicHead/index.vue";
 import '@/styles/iconfont.css'
-import {searchHotDetail} from "@/api/api";
+import {search, searchHotDetail} from "@/api/api";
 
 export default {
   components: {musicHead},
@@ -65,7 +66,13 @@ export default {
       hotDetails: [],
       searchWord: '',
       searchHistory: [],
-      searchType: 2,
+      /**
+       * 1：历史搜索、热榜
+       * 2：搜索提示
+       * 3：搜索结果
+       */
+      searchType: 3,
+      searchResult: []
     }
   },
   onLoad() {
@@ -96,6 +103,11 @@ export default {
         key: 'searchHistory',
         data: this.searchHistory
       })
+
+      search(this.searchWord).then(res => {
+        this.searchResult = res.data.result.songs
+        this.searchType = 3
+      })
     },
     // 清空历史记录
     handleToClear() {
@@ -104,6 +116,17 @@ export default {
         success: res => {
           this.searchHistory = []
         }
+      })
+    },
+    // 清空搜索框
+    handleToClose() {
+      this.searchWord = '';
+      this.searchType = 1;
+    },
+    // 跳转详情页
+    handleToDetail(songId, songName) {
+      uni.navigateTo({
+        url: `/pages/detail/index?songId=${songId}&songName=${songName}`
       })
     }
   },
